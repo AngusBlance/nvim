@@ -25,22 +25,42 @@ return {
     },
   },
 
-  -- Formatters with Conform (LazyVim default)
+  -- Formatters with Conform - Fixed configuration
   {
     "stevearc/conform.nvim",
     opts = {
       formatters_by_ft = {
-        python = { "ruff_format" }, -- or { "black" } if you prefer
+        python = { "autopep8" }, -- Use autopep8 for Python formatting (preserves your style)
+      },
+      formatters = {
+        autopep8 = {
+          command = "autopep8",
+          args = { 
+            "--max-line-length", "120",  -- Match your preferred line length
+            "-"  -- Read from stdin
+          },
+        },
       },
     },
   },
 
-  -- Linters with nvim-lint (optional if you rely on Ruff LSP diagnostics)
+  -- Python linting with nvim-lint
   {
-    "mfussenegger/nvim-lint",
+    "mfussenegger/nvim-lint", 
     opts = {
       linters_by_ft = {
-        python = { "ruff" },
+        python = { "ruff" }, -- Use ruff for Python linting
+      },
+      linters = {
+        ruff = {
+          args = { 
+            "check", 
+            "--config", vim.fn.stdpath("config") .. "/ruff.toml",
+            "--output-format", "text", 
+            "--stdin-filename", "$FILENAME", 
+            "-" 
+          },
+        },
       },
     },
   },
