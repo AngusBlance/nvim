@@ -1,4 +1,3 @@
--- Supermaven - Fastest AI autocomplete (Free tier available)
 return {
   {
     "supermaven-inc/supermaven-nvim",
@@ -15,30 +14,31 @@ return {
           cterm = 244,
         },
         log_level = "info",
-        disable_inline_completion = false, -- Keep inline completions
+        disable_inline_completion = false,
         disable_keymaps = false,
+        ignore_filetypes = { "cpp" },
       })
     end,
   },
-  -- Codeium - Completely FREE alternative (as backup)
   {
     "Exafunction/codeium.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
       "hrsh7th/nvim-cmp",
     },
-    event = "BufEnter", -- Load when entering a buffer
+    event = "BufEnter",
     config = function()
-      -- Only configure if cmp is available
-      local ok, cmp = pcall(require, "cmp")
+      local ok, _ = pcall(require, "cmp")
       if not ok then
         vim.notify("nvim-cmp not loaded, skipping Codeium setup", vim.log.levels.WARN)
         return
       end
-      
       require("codeium").setup({
-        enable_chat = true, -- Free chat feature
+        enable_chat = true,
       })
     end,
   },
 }
+
+
+
