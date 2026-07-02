@@ -8,6 +8,9 @@ vim.keymap.set({ "n", "t" }, "<S-l>", "<Cmd>bnext<CR>", opts)
 -- quick save
 vim.keymap.set("n", "<leader>w", ":w<CR>", opts)
 
+-- delete current buffer
+vim.keymap.set("n", "<leader>bd", ":bd<CR>", opts)
+
 -- Split navigation
 vim.keymap.set("n", "<C-h>", "<C-w>h", opts)
 vim.keymap.set("n", "<C-j>", "<C-w>j", opts)

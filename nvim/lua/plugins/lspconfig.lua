@@ -1,9 +1,52 @@
+-- Auto-format on save for C/C++
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern = { "*.c", "*.cpp", "*.h", "*.hpp" },
+	callback = function()
+		vim.lsp.buf.format({ async = false })
+	end,
+})
+
 return {
 	"neovim/nvim-lspconfig",
 	dependencies = {
 		"williamboman/mason-lspconfig.nvim",
 	},
-	config = function()
+	-- Language files (luaLsp.lua, webdev.lua, ...) extend opts.servers with their own entries.
+	opts = {
+		servers = {
+			clangd = {
+				keys = {
+					{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
+				},
+				root_markers = {
+					"compile_commands.json",
+					"compile_flags.txt",
+					"configure.ac",
+					"Makefile",
+					"configure.in",
+					"config.h.in",
+					"meson.build",
+					"meson_options.txt",
+					"build.ninja",
+					".git",
+				},
+				cmd = {
+					"clangd",
+					"--background-index",
+					"--clang-tidy",
+					"--header-insertion=iwyu",
+					"--completion-style=detailed",
+					"--fallback-style=llvm",
+				},
+				init_options = {
+					usePlaceholders = true,
+					completeUnimported = true,
+					clangdFileStatus = true,
+				},
+			},
+		},
+	},
+	config = function(_, opts)
 		-- Configure diagnostics
 		vim.diagnostic.config({
 			virtual_text = {
@@ -22,113 +65,14 @@ return {
 			capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
 		end
 
-		vim.lsp.config("clangd", {
-			capabilities = capabilities,
-			keys = {
-				{ "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", desc = "Switch Source/Header (C/C++)" },
-			},
-			root_markers = {
-				"compile_commands.json",
-				"compile_flags.txt",
-				"configure.ac",
-				"Makefile",
-				"configure.in",
-				"config.h.in",
-				"meson.build",
-				"meson_options.txt",
-				"build.ninja",
-				".git",
-			},
-			cmd = {
-				"clangd",
-				"--background-index",
-				"--clang-tidy",
-				"--header-insertion=iwyu",
-				"--completion-style=detailed",
-				"--fallback-style=llvm",
-			},
-			init_options = {
-				usePlaceholders = true,
-				completeUnimported = true,
-				clangdFileStatus = true,
-			},
-		})
-
 		require("mason-lspconfig").setup({
-			ensure_installed = { "clangd", "lua_ls", "html", "cssls", "emmet_ls" },
+			ensure_installed = vim.tbl_keys(opts.servers),
 			automatic_installation = true,
 		})
 
-		-- Setup lua_ls
-		vim.lsp.config("lua_ls", {
-			capabilities = capabilities,
-			settings = {
-				Lua = {
-					diagnostics = { globals = { "vim" } },
-					workspace = {
-						checkThirdParty = false,
-						library = vim.api.nvim_get_runtime_file("", true),
-					},
-					telemetry = { enable = false },
-				},
-			},
-		})
-
-		-- Setup html
-		vim.lsp.config("html", {
-			capabilities = capabilities,
-			filetypes = { "html", "htmldjango" },
-		})
-
-		-- Setup cssls
-		vim.lsp.config("cssls", {
-			capabilities = capabilities,
-			filetypes = { "css", "scss", "less" },
-			settings = {
-				css = {
-					validate = true,
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				scss = {
-					validate = true,
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-				less = {
-					validate = true,
-					lint = {
-						unknownAtRules = "ignore",
-					},
-				},
-			},
-		})
-
-		-- Setup emmet_ls
-		vim.lsp.config("emmet_ls", {
-			capabilities = capabilities,
-			filetypes = { "html", "htmldjango", "css", "scss", "less", "javascriptreact", "typescriptreact" },
-		})
-
-		-- Auto-format on save for C/C++
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = {"*.c", "*.cpp", "*.h", "*.hpp"},
-			callback = function()
-				vim.lsp.buf.format({ async = false })
-			end,
-		})
-
-		-- Auto-format on save for HTML/CSS
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = {"*.html", "*.css", "*.scss", "*.less"},
-			callback = function()
-				vim.lsp.buf.format({ async = false })
-			end,
-		})
-
-		-- Enable auto-attachment for configured LSP servers
-		vim.lsp.enable('clangd', 'lua_ls', 'html', 'cssls', 'emmet_ls')
- 	end,
+		for name, server_opts in pairs(opts.servers) do
+			vim.lsp.config(name, vim.tbl_deep_extend("force", { capabilities = capabilities }, server_opts))
+		end
+		vim.lsp.enable(vim.tbl_keys(opts.servers))
+	end,
 }
