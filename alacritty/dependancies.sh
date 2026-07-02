@@ -9,6 +9,5 @@ fc-cache -fv
 # Alacritty looks for its config at ~/.config/alacritty/alacritty.toml by
 # default, so symlink this repo's copy there instead of relying on a manual copy.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-mkdir -p ~/.config/alacritty
 ln -sf "$SCRIPT_DIR/alacritty.toml" ~/.config/alacritty/alacritty.toml
 ln -sf "$SCRIPT_DIR/cappuccin-latte.toml" ~/.config/alacritty/cappuccin-latte.toml
