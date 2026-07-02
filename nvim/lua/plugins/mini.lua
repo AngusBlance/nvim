@@ -5,6 +5,7 @@ return {
     enabled = true,
     config = function()
       require("mini.git").setup({})
+      require("mini.files").setup({})
       -- mini.tabline setup per mini-tabline.txt:42-107
 
       require("mini.tabline").setup({})
@@ -36,5 +37,14 @@ return {
         },
       })
     end,
+    keys = {
+      {
+        "<leader>e",
+        function()
+          require("mini.files").open(vim.api.nvim_buf_get_name(0), true)
+        end,
+        desc = "Open mini.files (current file dir)",
+      },
+    },
   },
 }
