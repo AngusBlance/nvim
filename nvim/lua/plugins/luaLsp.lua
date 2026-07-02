@@ -12,14 +12,32 @@ return {
 		},
 	},
 
-	
+	{
+		"neovim/nvim-lspconfig",
+		opts = {
+			servers = {
+				lua_ls = {
+					settings = {
+						Lua = {
+							diagnostics = { globals = { "vim" } },
+							workspace = {
+								checkThirdParty = false,
+								library = vim.api.nvim_get_runtime_file("", true),
+							},
+							telemetry = { enable = false },
+						},
+					},
+				},
+			},
+		},
+	},
 
 	-- Install formatters/linters via Mason
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     dependencies = { "williamboman/mason.nvim" },
     opts = {
-      ensure_installed = { "stylua", "selene", "superhtml" },
+      ensure_installed = { "stylua", "selene" },
       auto_update = false,
       run_on_start = true,
     },
