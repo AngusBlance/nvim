@@ -10,4 +10,3 @@ fc-cache -fv
 # default, so symlink this repo's copy there instead of relying on a manual copy.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ln -sf "$SCRIPT_DIR/alacritty.toml" ~/.config/alacritty/alacritty.toml
-ln -sf "$SCRIPT_DIR/cappuccin-latte.toml" ~/.config/alacritty/cappuccin-latte.toml
