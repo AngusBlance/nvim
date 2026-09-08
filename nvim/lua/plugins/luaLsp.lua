@@ -12,15 +12,23 @@ return {
 		},
 	},
 
-	-- Automatically install LSP servers through Mason
 	{
-		"williamboman/mason-lspconfig.nvim",
-		dependencies = { "williamboman/mason.nvim" },
+		"neovim/nvim-lspconfig",
 		opts = {
-			ensure_installed = {
-				"lua_ls",
+			servers = {
+				lua_ls = {
+					settings = {
+						Lua = {
+							diagnostics = { globals = { "vim" } },
+							workspace = {
+								checkThirdParty = false,
+								library = vim.api.nvim_get_runtime_file("", true),
+							},
+							telemetry = { enable = false },
+						},
+					},
+				},
 			},
-			automatic_installation = true,
 		},
 	},
 
@@ -35,42 +43,7 @@ return {
     },
   },
 
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      local cfg = vim.lsp.config
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      local ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-      if ok then
-        capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
-      end
-
-      cfg.lua_ls = vim.tbl_deep_extend("force", cfg.lua_ls or {}, {
-        capabilities = capabilities,
-        settings = {
-          Lua = {
-            diagnostics = { globals = { "vim" } },
-            workspace = {
-              checkThirdParty = false,
-              library = vim.api.nvim_get_runtime_file("", true),
-            },
-            telemetry = { enable = false },
-          },
-        },
-      })
-
-      local group = vim.api.nvim_create_augroup("user-lua-lsp", { clear = true })
-      vim.api.nvim_create_autocmd("FileType", {
-        group = group,
-        pattern = "lua",
-        callback = function(event)
-          if not vim.lsp.get_clients({ bufnr = event.buf, name = "lua_ls" })[1] then
-            vim.lsp.start(cfg.lua_ls)
-          end
-        end,
-      })
-    end,
-  },
+  
 
   -- Default linting/formatting plugins without extra config
   { "mfussenegger/nvim-lint" },
